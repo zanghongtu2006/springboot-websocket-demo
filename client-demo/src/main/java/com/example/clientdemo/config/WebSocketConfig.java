@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -13,25 +15,31 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 @EnableWebSocket
 public class WebSocketConfig {
     @Bean
-    public WebSocketStompClient webSocketStompClient(WebSocketClient webSocketClient,
-                                                     StompSessionHandler stompSessionHandler) {
+    public WebSocketStompClient webSocketStompClient(WebSocketClient webSocketClient,TaskScheduler taskScheduler) {
         WebSocketStompClient webSocketStompClient = new WebSocketStompClient(webSocketClient);
         webSocketStompClient.setMessageConverter(new MappingJackson2MessageConverter());
-        webSocketStompClient.connect("ws://localhost:8080/chatserver", stompSessionHandler);
+
+        webSocketStompClient.setTaskScheduler(taskScheduler);
+        webSocketStompClient.setDefaultHeartbeat(new long[]{10000, 10000});
+
         return webSocketStompClient;
     }
 
     @Bean
     public WebSocketClient webSocketClient() {
         return new StandardWebSocketClient();
-//        List<Transport> transports = new ArrayList<>();
-//        transports.add(new WebSocketTransport(new StandardWebSocketClient()));
-//        transports.add(new RestTemplateXhrTransport());
-//        return new SockJsClient(transports);
     }
 
     @Bean
-    public StompSessionHandler stompSessionHandler() {
-        return new ClientStompSessionHandler();
+    public TaskScheduler taskScheduler() {
+        // 创建并返回一个ThreadPoolTaskScheduler
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        scheduler.initialize();
+        return scheduler;
+    }
+
+    @Bean
+    public StompSessionHandler stompSessionHandler(WebSocketStompClient webSocketStompClient, TaskScheduler taskScheduler) {
+        return new ClientStompSessionHandler(webSocketStompClient, taskScheduler);
     }
 }
