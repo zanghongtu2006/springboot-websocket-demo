@@ -2,7 +2,6 @@ package com.example.clientdemo.config;
 
 import com.example.clientdemo.controller.dto.HelloMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -17,17 +16,19 @@ import java.util.Date;
 public class ClientStompSessionHandler extends StompSessionHandlerAdapter {
     private final WebSocketStompClient stompClient;
     private final TaskScheduler taskScheduler;
-    private final static String url = "ws://localhost:8080/chatserver";
 
-    @Autowired
-    public ClientStompSessionHandler(WebSocketStompClient stompClient, TaskScheduler taskScheduler) {
+    private final Config config;
+
+    public ClientStompSessionHandler(WebSocketStompClient stompClient, TaskScheduler taskScheduler, Config config) {
         this.stompClient = stompClient;
         this.taskScheduler = taskScheduler;
+        this.config = config;
         reconnect();
     }
 
     @Override
     public void afterConnected(StompSession session, @NonNull StompHeaders headers) {
+        log.info("{}, {}", session.getSessionId(), session.isConnected());
         log.info("Client connected: headers {}", headers);
 
         String message = "one-time message from client";
@@ -52,12 +53,12 @@ public class ClientStompSessionHandler extends StompSessionHandlerAdapter {
         log.error("Client transport error: error {}", exception.getMessage());
         if (!session.isConnected()) {
             // 如果连接断开，启动一个重连任务
-            taskScheduler.schedule(this::reconnect, new Date(System.currentTimeMillis() + 10000).toInstant());  // 10秒后尝试重连
+            taskScheduler.schedule(this::reconnect, new Date(System.currentTimeMillis() + 30000).toInstant());  // 10秒后尝试重连
         }
     }
 
     private void reconnect() {
         // 重连逻辑
-        stompClient.connectAsync(url, this);
+        stompClient.connect(config.getUrl(), this);
     }
 }

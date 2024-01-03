@@ -15,7 +15,7 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 @EnableWebSocket
 public class WebSocketConfig {
     @Bean
-    public WebSocketStompClient webSocketStompClient(WebSocketClient webSocketClient,TaskScheduler taskScheduler) {
+    public WebSocketStompClient webSocketStompClient(WebSocketClient webSocketClient, TaskScheduler taskScheduler) {
         WebSocketStompClient webSocketStompClient = new WebSocketStompClient(webSocketClient);
         webSocketStompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
@@ -39,7 +39,8 @@ public class WebSocketConfig {
     }
 
     @Bean
-    public StompSessionHandler stompSessionHandler(WebSocketStompClient webSocketStompClient, TaskScheduler taskScheduler) {
-        return new ClientStompSessionHandler(webSocketStompClient, taskScheduler);
+    public StompSessionHandler stompSessionHandler(WebSocketStompClient webSocketStompClient, TaskScheduler taskScheduler,
+                                                   Config config) {
+        return new ClientStompSessionHandler(webSocketStompClient, taskScheduler, config);
     }
 }
