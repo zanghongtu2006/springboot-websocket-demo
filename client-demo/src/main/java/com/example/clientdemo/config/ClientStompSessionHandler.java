@@ -59,6 +59,6 @@ public class ClientStompSessionHandler extends StompSessionHandlerAdapter {
 
     private void reconnect() {
         // 重连逻辑
-        stompClient.connect(config.getUrl(), this);
+        stompClient.connectAsync(config.getUrl(), this);
     }
 }
