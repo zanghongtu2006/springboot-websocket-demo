@@ -1,7 +1,9 @@
 package com.example.clientdemo.config;
 
 import com.example.clientdemo.controller.dto.HelloMessage;
+import com.example.clientdemo.service.StompSessionService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -14,6 +16,9 @@ import java.util.Date;
 
 @Slf4j
 public class ClientStompSessionHandler extends StompSessionHandlerAdapter {
+    @Autowired
+    private StompSessionService stompSessionService;
+
     private final WebSocketStompClient stompClient;
     private final TaskScheduler taskScheduler;
 
@@ -29,6 +34,7 @@ public class ClientStompSessionHandler extends StompSessionHandlerAdapter {
     @Override
     public void afterConnected(StompSession session, @NonNull StompHeaders headers) {
         log.info("{}, {}", session.getSessionId(), session.isConnected());
+        stompSessionService.setStompSession(session);
         log.info("Client connected: headers {}", headers);
 
         String message = "one-time message from client";
