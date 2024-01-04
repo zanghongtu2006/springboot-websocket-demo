@@ -1,23 +1,25 @@
 package com.example.clientdemo.config;
 
+import com.example.clientdemo.service.IChatMessageService;
 import com.example.clientdemo.controller.dto.HelloMessage;
+import com.example.clientdemo.controller.dto.chat.ChatDTO;
 import com.example.clientdemo.service.StompSessionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.messaging.simp.stomp.*;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
+import java.lang.reflect.Type;
 import java.util.Date;
 
 @Slf4j
 public class ClientStompSessionHandler extends StompSessionHandlerAdapter {
     @Autowired
     private StompSessionService stompSessionService;
+    @Autowired
+    private IChatMessageService chatMessageService;
 
     private final WebSocketStompClient stompClient;
     private final TaskScheduler taskScheduler;
@@ -40,6 +42,20 @@ public class ClientStompSessionHandler extends StompSessionHandlerAdapter {
         String message = "one-time message from client";
         log.info("Client sends: {}", message);
         session.send("/app/hello", new HelloMessage(message));
+
+        // 订阅指定主题
+        session.subscribe("/topic/chat-reply", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return ChatDTO.class; // 替换成你期望的消息类型
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                ChatDTO message = (ChatDTO) payload;
+                chatMessageService.dealChatReplyMessage(message);
+            }
+        });
     }
 
     @Override

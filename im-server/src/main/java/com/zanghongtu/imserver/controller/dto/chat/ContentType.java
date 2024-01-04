@@ -1,4 +1,4 @@
-package com.example.demo.controller.dto.chat;
+package com.zanghongtu.imserver.controller.dto.chat;
 
 import lombok.Getter;
 

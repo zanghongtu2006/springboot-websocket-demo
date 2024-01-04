@@ -1,6 +1,6 @@
-package com.example.demo.controller.ws;
+package com.zanghongtu.imserver.controller.ws;
 
-import com.example.demo.controller.dto.Heartbeat;
+import com.zanghongtu.imserver.controller.dto.Heartbeat;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;

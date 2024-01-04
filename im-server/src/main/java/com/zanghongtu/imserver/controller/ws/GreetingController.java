@@ -1,7 +1,7 @@
-package com.example.demo.controller.ws;
+package com.zanghongtu.imserver.controller.ws;
 
-import com.example.demo.controller.dto.Greeting;
-import com.example.demo.controller.dto.HelloMessage;
+import com.zanghongtu.imserver.controller.dto.Greeting;
+import com.zanghongtu.imserver.controller.dto.HelloMessage;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;

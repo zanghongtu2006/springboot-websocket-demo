@@ -1,4 +1,4 @@
-package com.example.demo.controller.dto;
+package com.zanghongtu.imserver.controller.dto;
 
 public class HelloMessage {
 
