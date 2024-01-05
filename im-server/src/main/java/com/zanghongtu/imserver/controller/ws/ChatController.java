@@ -1,5 +1,6 @@
 package com.zanghongtu.imserver.controller.ws;
 
+import com.zanghongtu.imserver.controller.dto.chat.AdditionalInfoDTO;
 import com.zanghongtu.imserver.controller.dto.chat.ChatDTO;
 import com.zanghongtu.imserver.controller.dto.chat.MessageType;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +18,10 @@ public class ChatController {
         log.info("Recv chat: {}", chatDTO);
         //dispatch chat dto
         //from -> to
+        AdditionalInfoDTO additionalInfo = new AdditionalInfoDTO();
+        additionalInfo.setReplayToMessageId(chatDTO.getMessageId());
         ChatDTO reply = new ChatDTO();
-        reply.setMessageId(chatDTO.getMessageId());
+        reply.setAdditionalInfo(additionalInfo);
         reply.setMessageType(MessageType.CHAT_REPLY);
         return reply;
     }

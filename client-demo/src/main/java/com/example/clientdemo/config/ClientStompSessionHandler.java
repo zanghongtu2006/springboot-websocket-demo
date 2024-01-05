@@ -1,14 +1,15 @@
 package com.example.clientdemo.config;
 
-import com.example.clientdemo.service.IChatMessageService;
 import com.example.clientdemo.controller.dto.HelloMessage;
 import com.example.clientdemo.controller.dto.chat.ChatDTO;
+import com.example.clientdemo.service.IChatMessageService;
 import com.example.clientdemo.service.StompSessionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.stomp.*;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
@@ -80,7 +81,12 @@ public class ClientStompSessionHandler extends StompSessionHandlerAdapter {
     }
 
     private void reconnect() {
+        StompHeaders stompHeaders = new StompHeaders();
+        stompHeaders.setLogin("foo"); // 设置用户名
+        stompHeaders.setPasscode("bar"); // 设置密码
+        WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
+        headers.setBearerAuth("bare-only-token");
         // 重连逻辑
-        stompClient.connectAsync(config.getUrl(), this);
+        stompClient.connectAsync(config.getUrl(), headers, stompHeaders, this);
     }
 }
